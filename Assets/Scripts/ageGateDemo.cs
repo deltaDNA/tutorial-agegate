@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using DeltaDNA; 
+using DeltaDNA;
 
 
-public class ageGateDemo : MonoBehaviour {
+public class ageGateDemo : MonoBehaviour
+{
 
     public UnityEngine.UI.Text lblUser;  // used to display the DDNA userID on screen
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
 
         StartDDNA();
     }
@@ -34,16 +36,13 @@ public class ageGateDemo : MonoBehaviour {
             "https://engage11373ttrlg.deltadna.net"
         );
 
-        
-
-
+       
         // CloseAgeGate();
     }
 
 
     public void Reset()
-    {
-        lblUser.text = "Twat";
+    { 
         // This method will reset the app, if it is active and isn't busy uploading.
         // A new userID will be generated and any previous age gate settings will be forgotten.
         // You wouldn't want to do this in a normal app
@@ -54,8 +53,27 @@ public class ageGateDemo : MonoBehaviour {
 
             StartDDNA();
         }
-
-
     }
 
+    public void AgeGateCheck()
+    {
+        Debug.Log("Age Check");
+    
+        var engagement = new Engagement("ageGate");
+        Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+        DDNA.Instance.RequestEngagement(engagement, (response) =>
+        {
+            if (response == null || response.JSON == null || !response.JSON.ContainsKey("parameters")) return ;
+            parameters = response.JSON["parameters"] as Dictionary<string, object>;
+
+            if (parameters.ContainsKey("ageGateQuestion")) Debug.Log("Question " + parameters["ageGateQuestion"]); 
+
+                      
+
+        }, (exception) =>
+        {
+            Debug.Log("Engage reported an error: " + exception.Message);
+        });
+    }
 }
